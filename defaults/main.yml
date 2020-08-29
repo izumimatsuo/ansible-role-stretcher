@@ -1,2 +1,3 @@
 ---
 # defaults file for ansible-role-stretcher
+stretcher_autorun_manifest:

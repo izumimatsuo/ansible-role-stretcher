@@ -1,0 +1,9 @@
+[Unit]
+After=network-online.target
+
+[Service]
+User=root
+ExecStart=/bin/sh -c "echo {{ stretcher_autorun_manifest }} | /usr/local/bin/stretcher"
+
+[Install]
+WantedBy=multi-user.target
