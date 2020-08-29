@@ -1,0 +1,3 @@
+---
+# vars file for ansible-role-stretcher
+STRETCHER_VERSION: 'v1.0.0'
