@@ -3,13 +3,11 @@
 - name: install unzip for unarchive module
   yum:
     name: unzip
-  tags: stretcher
 
 - name: detect stretcher is installed
   stat:
     path: /usr/local/bin/stretcher
   register: stretcher_bin
-  tags: stretcher
 
 - block:
   - name: download stretcher {{ STRETCHER_VERSION }}
@@ -20,16 +18,16 @@
       owner: root
       group: root
       mode: '0755'
+
   - name: install stretcher
     command: mv /tmp/stretcher-{{ STRETCHER_VERSION }}-linux-amd64 /usr/local/bin/stretcher
+
   when: not stretcher_bin.stat.exists
-  tags: stretcher
 
 - name: detect consul conf directory
   stat:
     path: /etc/consul.d
   register: consul_conf_dir
-  tags: stretcher
 
 - name: copy consul conf file
   template:
@@ -40,27 +38,23 @@
     mode: '0644'
   notify: restart consul service
   when: consul_conf_dir.stat.exists
-  tags: stretcher
 
-- name: copy stretcher autorun service file
-  template:
-    src: stretcher-autorun.service.j2
-    dest: /etc/systemd/system/stretcher-autorun.service
-    owner: root
-    group: root
-    mode: '0644'
-  when: stretcher_autorun_manifest != None
-  tags: stretcher
+- block:
+  - name: copy stretcher autorun service file
+    template:
+      src: stretcher-autorun.service.j2
+      dest: /etc/systemd/system/stretcher-autorun.service
+      owner: root
+      group: root
+      mode: '0644'
 
-- name: daemon-reload
-  systemd: daemon_reload=yes
-  when: stretcher_autorun_manifest != None
-  tags: stretcher
+  - name: daemon-reload
+    systemd: daemon_reload=yes
 
-- name: start stretcher-autorun service
-  service:
-    name: stretcher-autorun
-    state: started
-    enabled: yes
-  when: stretcher_autorun_manifest != None
-  tags: stretcher
+  - name: start stretcher-autorun service
+    service:
+      name: stretcher-autorun
+      state: started
+      enabled: yes
+
+  when: not stretcher_bin.stat.exists and stretcher_autorun_manifest != None
