@@ -24,21 +24,6 @@
 
   when: not stretcher_bin.stat.exists
 
-- name: detect consul conf directory
-  stat:
-    path: /etc/consul.d
-  register: consul_conf_dir
-
-- name: copy consul conf file
-  template:
-    src: stretcher.json.j2
-    dest: /etc/consul.d/stretcher.json
-    owner: root
-    group: root
-    mode: '0644'
-  notify: restart consul service
-  when: consul_conf_dir.stat.exists
-
 - block:
   - name: copy stretcher autorun service file
     template:
